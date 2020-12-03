@@ -134,10 +134,13 @@ public class MainVerticle extends AbstractVerticle
     final Promise<Void> ret = Promise.promise();
     final Promise<Transaction> txp = Promise.promise();
     pool.begin(txp);
-    return txp.future()
-              .compose(tx -> mapper.apply(tx)
-                                   .onFailure(throwable -> tx.rollback(asyncResult -> ret.fail(throwable)))
-                                   .onSuccess(ignored -> tx.commit(ret)));
+    txp.future()
+       .compose(tx -> mapper.apply(tx)
+                            .onFailure(throwable -> tx.rollback(asyncResult -> ret.fail(throwable)))
+                            .onSuccess(ignored -> tx.commit(ret)));
+
+    return ret.future();
+
   }
 
   Future<?> dontDoAnythingBad()
@@ -166,6 +169,7 @@ public class MainVerticle extends AbstractVerticle
     for (int i = 0; i < count; i++)
     {
       fs.add(doABadThing());
+      //fs.add(dontDoAnythingBad());
     }
 
     CompositeFuture.all(fs).onComplete(ignored -> spawnTransactions());
