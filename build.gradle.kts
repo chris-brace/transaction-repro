@@ -16,6 +16,8 @@ repositories {
 
 val vertxVersion = "3.9.4"
 val junitJupiterVersion = "5.6.0"
+val log4jVersion = "2.13.3"
+val jetbrainsAnnotationsVersion = "20.1.0"
 
 val mainVerticleName = "ai.brace.transaction_test.MainVerticle"
 val watchForChange = "src/**/*"
@@ -24,17 +26,24 @@ val launcherClassName = "io.vertx.core.Launcher"
 
 application {
   mainClassName = launcherClassName
+  applicationDefaultJvmArgs += "-Dlog4j.configurationFile=log4j2.xml"
 }
 
 dependencies {
   implementation("io.vertx:vertx-pg-client:$vertxVersion")
+  implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+  implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
+  implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
+  implementation("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+
+
   testImplementation("io.vertx:vertx-junit5:$vertxVersion")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 }
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
   }
 
 tasks.withType<ShadowJar> {
